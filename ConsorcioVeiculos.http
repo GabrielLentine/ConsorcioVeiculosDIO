@@ -1,0 +1,6 @@
+@ConsorcioVeiculos_HostAddress = http://localhost:5108
+
+GET {{ConsorcioVeiculos_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
