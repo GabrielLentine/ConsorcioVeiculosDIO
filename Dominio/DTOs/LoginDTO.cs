@@ -1,4 +1,4 @@
-﻿namespace ConsorcioVeiculos.Domínio.DTOs;
+﻿namespace ConsorcioVeiculos.Dominio.DTOs;
 public class LoginDTO
 {
     public string Email { get; set; } = default;

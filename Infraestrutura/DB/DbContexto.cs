@@ -1,4 +1,37 @@
-﻿namespace ConsorcioVeiculos.Infraestrutura.DB;
-public class DbContexto
+﻿using ConsorcioVeiculos.Dominio.Entidades;
+using Microsoft.EntityFrameworkCore;
+
+namespace ConsorcioVeiculos.Infraestrutura.DB;
+public class DbContexto : DbContext
 {
+    private readonly IConfiguration _configuration;
+    public DbContexto(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public DbSet<Administrador> Administradores { get; set; } = default!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Administrador>().HasData(
+            new Administrador
+            {
+                Id = 1 ,
+                Email = "administrador@teste.com",
+                Senha = "123456",
+                Perfil = "Adm"
+            }
+        );
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if(!optionsBuilder.IsConfigured)
+        {
+            var conexao = _configuration.GetConnectionString("mysql")?.ToString();
+
+            if(!string.IsNullOrEmpty(conexao)) optionsBuilder.UseMySql(conexao , ServerVersion.AutoDetect(conexao));
+        }
+    }
 }
