@@ -1,5 +1,8 @@
 using ConsorcioVeiculos.Dominio.DTOs;
+using ConsorcioVeiculos.Dominio.Interfaces;
+using ConsorcioVeiculos.Dominio.Servicos;
 using ConsorcioVeiculos.Infraestrutura.DB;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,7 @@ builder.Services.AddDbContext<DbContexto>(op =>
         builder.Configuration.GetConnectionString("mysql"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("mysql")))
     );
+builder.Services.AddScoped<IAdministradorServico, AdministradorServico>();
 
 var app = builder.Build();
 
@@ -25,9 +29,9 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => "Hello World!");
 
 // post
-app.MapPost("/login" , (LoginDTO loginDTO) =>
+app.MapPost("/login" , ([FromBody] LoginDTO loginDTO, IAdministradorServico admServico) =>
 {
-    if(loginDTO.Email == "adm@teste.com" && loginDTO.Senha == "123456") return Results.Ok("Login realizado com sucesso!");
+    if(admServico.Login(loginDTO) != null) return Results.Ok("Login realizado com sucesso!");
     else return Results.Unauthorized();
 });
 
