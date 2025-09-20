@@ -10,21 +10,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+#region Serviços e Injeção de Dependência
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<DbContexto>(op =>
-    op.UseMySql(
-        builder.Configuration.GetConnectionString("mysql"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("mysql")))
-    );
-builder.Services.AddScoped<IValidacaoDTO<VeiculoDTO>>();
+builder.Services.AddDbContext<DbContexto>(op => op.UseMySql(builder.Configuration.GetConnectionString("mysql"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("mysql"))));
+builder.Services.AddScoped<IValidacaoDTO<VeiculoDTO>, ValidarVeiculoDTO>();
 builder.Services.AddScoped<IValidacaoDTO<AdministradorDTO>, ValidarAdministradorDTO>();
 builder.Services.AddScoped<IAdministradorServico, AdministradorServico>();
 builder.Services.AddScoped<IVeiculosServico, VeiculosServico>();
+#endregion
 
 var app = builder.Build();
 
@@ -53,26 +48,34 @@ app.MapGet("/administradores/{id}" , ([FromRoute]int id, IAdministradorServico a
     var admin = admServico.BuscaPorId(id);
 
     if(admin != null) return Results.Ok(admin);
-    else return Results.NotFound();
+    else return Results.NotFound("Administrador não encontrado. Por favor, verifique o ID digitado e tente novamente!");
 }).WithTags("Administradores");
 
 // post
-app.MapPost("/administradores/login" , ([FromBody] LoginDTO loginDTO, AdministradorDTO adminDTO, IAdministradorServico admServico, IValidacaoDTO<AdministradorDTO> validacaoDTO) =>
+app.MapPost("/administradores/cadastro", ([FromBody] AdministradorDTO adminDTO, IAdministradorServico admServico, IValidacaoDTO<AdministradorDTO> validacaoDTO) =>
 {
     // validando dados obrigatórios
     var validacao = validacaoDTO.Validar(adminDTO);
     if(validacao.Mensagens.Any()) return Results.BadRequest(validacao);
 
-    var admin = new Administrador
+    var newAdmin = new Administrador
     {
         Email = adminDTO.Email,
         Senha = adminDTO.Senha,
         Perfil = adminDTO.Perfil
     };
-    admServico.Adicionar(admin);
+    admServico.Adicionar(newAdmin);
 
-    if(admServico.Login(loginDTO) != null) return Results.Ok("Login realizado com sucesso!");
-    else return Results.Unauthorized();
+    return Results.Created($"/administradores/{newAdmin.Id}", new { newAdmin.Id, newAdmin.Email, newAdmin.Perfil });
+}).WithTags("Administradores");
+
+app.MapPost("/administradores/login" , ([FromBody] LoginDTO loginDTO, IAdministradorServico admServico) =>
+{
+    var admin = admServico.Login(loginDTO);
+
+    if(admin == null) return Results.NotFound("Administrador não encontrado. Por favor, verifique o email e senha digitados e tente novamente!");
+    
+    return Results.Ok("Login realizado com sucesso!");
 }).WithTags("Administradores");
 
 // put
@@ -121,11 +124,11 @@ app.MapGet("/veiculos/{id}" , ([FromRoute]int id, IVeiculosServico veiculosServi
     var veiculo = veiculosServico.BuscaPorId(id);
 
     if(veiculo != null) return Results.Ok(veiculo);
-    else return Results.NotFound();
+    else return Results.NotFound("Veículo não encontrado. Por favor, verifique o ID digitado e tente novamente!");
 }).WithTags("Veículos");
 
 // post
-app.MapPost("/veiculos" , ([FromBody] VeiculoDTO veiculoDTO , IVeiculosServico veiculosServico, IValidacaoDTO validacaoDTO) =>
+app.MapPost("/veiculos" , ([FromBody] VeiculoDTO veiculoDTO , IVeiculosServico veiculosServico, IValidacaoDTO<VeiculoDTO> validacaoDTO) =>
 {
     // validando dados obrigatórios
     var validacao = validacaoDTO.Validar(veiculoDTO);
@@ -143,7 +146,7 @@ app.MapPost("/veiculos" , ([FromBody] VeiculoDTO veiculoDTO , IVeiculosServico v
 }).WithTags("Veículos");
 
 // put
-app.MapPut("/veiculos/{id}" , ([FromRoute]int id, [FromBody] VeiculoDTO veiculoDTO, IVeiculosServico veiculosServico, IValidacaoDTO validacaoDTO) =>
+app.MapPut("/veiculos/{id}" , ([FromRoute]int id, [FromBody] VeiculoDTO veiculoDTO, IVeiculosServico veiculosServico, IValidacaoDTO<VeiculoDTO> validacaoDTO) =>
 {
     var veiculo = veiculosServico.BuscaPorId(id);
     if(veiculo == null) return Results.NotFound();

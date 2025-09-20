@@ -33,7 +33,9 @@ namespace ConsorcioVeiculos.Dominio.Servicos
 
         public Veiculo? BuscaPorId(int id)
         {
-            return _contexto.Veiculos.Find(id) ?? throw new KeyNotFoundException("Veículo não encontrado.");
+            if(id <= 0) return null;
+
+            return _contexto.Veiculos.Find(id);
         }
 
         public void Adicionar(Veiculo veiculo)

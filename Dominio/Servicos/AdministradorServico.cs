@@ -39,7 +39,9 @@ public class AdministradorServico : IAdministradorServico
 
     public Administrador? BuscaPorId(int id)
     {
-        return _contexto.Administradores.Find(id) ?? throw new KeyNotFoundException("Administrador não encontrado.");
+        if(id <= 0) return null;
+        
+        return _contexto.Administradores.Find(id);
     }
 
     public void Adicionar(Administrador administrador)
