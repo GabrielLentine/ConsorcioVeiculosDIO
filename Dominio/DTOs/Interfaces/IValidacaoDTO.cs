@@ -1,7 +1,7 @@
 ﻿using ConsorcioVeiculos.Dominio.ModelViews;
 
 namespace ConsorcioVeiculos.Dominio.DTOs.Interfaces;
-public interface IValidacaoDTO
+public interface IValidacaoDTO<TDto>
 {
-    public ErrosDeValidacao Validar(VeiculoDTO veiculoDTO);
+    public ErrosDeValidacao Validar(TDto dto);
 }

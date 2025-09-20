@@ -21,7 +21,8 @@ builder.Services.AddDbContext<DbContexto>(op =>
         builder.Configuration.GetConnectionString("mysql"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("mysql")))
     );
-builder.Services.AddScoped<IValidacaoDTO, ValidacaoDTO>();
+builder.Services.AddScoped<IValidacaoDTO<VeiculoDTO>>();
+builder.Services.AddScoped<IValidacaoDTO<AdministradorDTO>, ValidarAdministradorDTO>();
 builder.Services.AddScoped<IAdministradorServico, AdministradorServico>();
 builder.Services.AddScoped<IVeiculosServico, VeiculosServico>();
 
@@ -38,11 +39,70 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => Results.Json(new Home())).WithTags("Home");
 
 #region Administradores
-// post
-app.MapPost("/administradores/login" , ([FromBody] LoginDTO loginDTO, IAdministradorServico admServico) =>
+// get todos
+app.MapGet("/administradores" , (IAdministradorServico admServico) =>
 {
+    var admins = admServico.Todos();
+
+    return Results.Ok(admins);
+}).WithTags("Administradores");
+
+// get id
+app.MapGet("/administradores/{id}" , ([FromRoute]int id, IAdministradorServico admServico) =>
+{
+    var admin = admServico.BuscaPorId(id);
+
+    if(admin != null) return Results.Ok(admin);
+    else return Results.NotFound();
+}).WithTags("Administradores");
+
+// post
+app.MapPost("/administradores/login" , ([FromBody] LoginDTO loginDTO, AdministradorDTO adminDTO, IAdministradorServico admServico, IValidacaoDTO<AdministradorDTO> validacaoDTO) =>
+{
+    // validando dados obrigatórios
+    var validacao = validacaoDTO.Validar(adminDTO);
+    if(validacao.Mensagens.Any()) return Results.BadRequest(validacao);
+
+    var admin = new Administrador
+    {
+        Email = adminDTO.Email,
+        Senha = adminDTO.Senha,
+        Perfil = adminDTO.Perfil
+    };
+    admServico.Adicionar(admin);
+
     if(admServico.Login(loginDTO) != null) return Results.Ok("Login realizado com sucesso!");
     else return Results.Unauthorized();
+}).WithTags("Administradores");
+
+// put
+app.MapPut("/administradores/{id}" , ([FromRoute]int id, [FromBody] AdministradorDTO adminDTO, IAdministradorServico admServico, IValidacaoDTO<AdministradorDTO> validacaoDTO) =>
+{
+    var administrador = admServico.BuscaPorId(id);
+    if(administrador == null) return Results.NotFound();
+
+    // validando dados obrigatórios
+    var validacao = validacaoDTO.Validar(adminDTO);
+    if(validacao.Mensagens.Any()) return Results.BadRequest(validacao);
+
+    // Atualiza os campos do administrador com os dados do DTO
+    administrador.Email = adminDTO.Email;
+    administrador.Senha = adminDTO.Senha;
+    administrador.Perfil = adminDTO.Perfil;
+    admServico.Atualizar(administrador);
+    
+    return Results.Ok(administrador);
+}).WithTags("Administradores");
+
+// delete
+app.MapDelete("/administradores/{id}" , ([FromRoute]int id, IAdministradorServico admServico) =>
+{
+    var admin = admServico.BuscaPorId(id);
+    if(admin == null) return Results.NotFound();
+
+    admServico.Deletar(admin);
+
+    return Results.Ok();
 }).WithTags("Administradores");
 #endregion
 
