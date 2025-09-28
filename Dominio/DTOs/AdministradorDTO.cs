@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ConsorcioVeiculos.Dominio.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ConsorcioVeiculos.Dominio.DTOs
 {
@@ -6,6 +7,6 @@ namespace ConsorcioVeiculos.Dominio.DTOs
     {
         public string? Email { get; set; } = default;
         public string? Senha { get; set; } = default;
-        public string? Perfil { get; set; } = default;
+        public Perfil Perfil { get; set; } = default;
     }
 }

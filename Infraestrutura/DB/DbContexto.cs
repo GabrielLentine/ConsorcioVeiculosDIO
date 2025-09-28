@@ -1,4 +1,5 @@
 ﻿using ConsorcioVeiculos.Dominio.Entidades;
+using ConsorcioVeiculos.Dominio.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConsorcioVeiculos.Infraestrutura.DB;
@@ -21,7 +22,7 @@ public class DbContexto : DbContext
                 Id = 1 ,
                 Email = "administrador@teste.com",
                 Senha = "123456",
-                Perfil = "Adm"
+                Perfil = Perfil.Leader
             }
         );
     }

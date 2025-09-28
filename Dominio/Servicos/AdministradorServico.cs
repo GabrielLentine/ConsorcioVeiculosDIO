@@ -17,7 +17,7 @@ public class AdministradorServico : IAdministradorServico
 
     public Administrador? Login(LoginDTO loginDTO)
     {
-        return _contexto.Administradores.Where(a => a.Email == loginDTO.Email && a.Senha == loginDTO.Senha).FirstOrDefault();
+        return _contexto.Administradores.Where(a => a.Email == loginDTO.Email && a.Senha == loginDTO.Senha && a.Perfil == loginDTO.Perfil).FirstOrDefault();
     }
 
     public List<Administrador> Todos(int? pagina = 1 , string? email = null , string? senha = null)

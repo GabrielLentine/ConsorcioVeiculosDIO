@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ConsorcioVeiculos.Dominio.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConsorcioVeiculos.Dominio.Entidades;
@@ -18,5 +19,5 @@ public class Administrador
 
     [Required(ErrorMessage = "O prefil é um campo obrigatório")]
     [StringLength(10)]
-    public string? Perfil { get; set; } = default;
+    public Perfil Perfil { get; set; } = default;
 }
