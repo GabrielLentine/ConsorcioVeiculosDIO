@@ -6,6 +6,7 @@ namespace ConsorcioVeiculos.Infraestrutura.DB;
 public class DbContexto : DbContext
 {
     private readonly IConfiguration _configuration;
+    
     public DbContexto(IConfiguration configuration)
     {
         _configuration = configuration;
