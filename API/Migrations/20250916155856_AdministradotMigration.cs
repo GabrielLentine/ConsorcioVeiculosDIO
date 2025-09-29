@@ -24,7 +24,7 @@ namespace ConsorcioVeiculos.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Senha = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Perfil = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                    Perfil = table.Column<string>(type: "int", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>

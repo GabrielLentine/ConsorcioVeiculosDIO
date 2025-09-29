@@ -7,9 +7,21 @@ public class DbContexto : DbContext
 {
     private readonly IConfiguration _configuration;
     
-    public DbContexto(IConfiguration configuration)
+    public DbContexto(DbContextOptions<DbContexto> options) : base(options)
     {
-        _configuration = configuration;
+    }
+
+    public DbContexto()
+    {
+    }
+
+    public static DbContexto CriarComConfiguracao(IConfiguration configuration)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<DbContexto>();
+        var conexao = configuration.GetConnectionString("mysql")?.ToString();
+        if(!string.IsNullOrEmpty(conexao)) optionsBuilder.UseMySql(conexao , ServerVersion.AutoDetect(conexao));
+        
+        return new DbContexto(optionsBuilder.Options);
     }
 
     public DbSet<Administrador> Administradores { get; set; } = default!;

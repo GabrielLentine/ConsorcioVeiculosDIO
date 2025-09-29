@@ -14,11 +14,9 @@ namespace ConsorcioVeiculos.Migrations
                 name: "Perfil",
                 table: "Administradores",
                 type: "int",
-                maxLength: 10,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "varchar(10)",
-                oldMaxLength: 10)
+                oldType: "varchar(10)")
                 .OldAnnotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.UpdateData(
@@ -32,23 +30,12 @@ namespace ConsorcioVeiculos.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
+            migrationBuilder.AlterColumn<int>(
                 name: "Perfil",
                 table: "Administradores",
-                type: "varchar(10)",
-                maxLength: 10,
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int",
-                oldMaxLength: 10)
+                type: "int",
+                nullable: false)
                 .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.UpdateData(
-                table: "Administradores",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "Perfil",
-                value: "Adm");
         }
     }
 }
