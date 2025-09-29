@@ -132,7 +132,7 @@ app.MapGet("/administradores" , (IAdministradorServico admServico) =>
     return Results.Ok(admins);
 })
     .RequireAuthorization(new AuthorizeAttribute { Roles = $"{Roles.Leader}"})
-    .WithTags("01_GET_Administradores")
+    .WithTags("Administradores")
     .WithDescription("Mostra todos os Leaders/Admins cadastrados no sistema.");
 
 // get id
