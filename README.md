@@ -27,7 +27,7 @@ Esta pasta contém a lógica central da aplicação, incluindo a API RESTful e a
 
 Contém as regras de negócio, entidades, DTOs e serviços da aplicação.
 
-- **`Authorization/`**: 🔐 Lógica relacionada à autenticação e autorização. Provavelmente contém classes para geração e validação de tokens JWT, bem como políticas de autorização.
+- **`Authorization/`**: 🔐 Lógica relacionada à autenticação e autorização. Contém classes para geração e validação de tokens JWT, bem como políticas de autorização.
   - `TokenService.cs`: Serviço para criação de tokens JWT.
 - **`DTOs/`**: 📥 Data Transfer Objects (Objetos de Transferência de Dados) utilizados para entrada e saída de dados da API.
   - `AdministradorDTO.cs`: Representa os dados de um administrador para operações como criação ou atualização.
